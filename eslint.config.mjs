@@ -15,10 +15,21 @@ const eslintConfig = [
     ignores: [
       "node_modules/**",
       ".next/**",
+      ".next-e2e/**",
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "playwright-report/**",
+      "test-results/**",
     ],
+  },
+  {
+    rules: {
+      // Prose-heavy UI copy; apostrophes and quotes are intentional.
+      "react/no-unescaped-entities": "off",
+      // Scanner photos are local data URLs; next/image optimization does not apply.
+      "@next/next/no-img-element": "off",
+    },
   },
 ];
 

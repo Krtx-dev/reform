@@ -1,0 +1,56 @@
+import { test, expect } from "@playwright/test";
+
+/** Captures README screenshots from the real app. Run with: SCREENSHOTS=1 npx playwright test screenshots */
+test.skip(!process.env.SCREENSHOTS, "set SCREENSHOTS=1 to capture");
+
+test("capture screenshots", async ({ page }) => {
+  const shot = (name: string) => page.screenshot({ path: `docs/screenshots/${name}.png` });
+  const nav = (label: string) => page.getByRole("navigation", { name: "Workspace" }).getByRole("link", { name: label, exact: true }).click();
+  await page.goto("/");
+  await page.waitForTimeout(2500);
+  await shot("landing");
+  await page.goto("/workspace");
+  await page.getByRole("heading", { name: "Explore the demonstration factory" }).click();
+  await page.getByRole("button", { name: "Close judge guide" }).click();
+  await nav("Inventory");
+  await page.waitForTimeout(800);
+  await shot("inventory");
+  await nav("Optimizer");
+  await page.getByTestId("run-optimization").click();
+  await expect(page.locator("text=VALID").first()).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(800);
+  await shot("optimizer");
+  await page.getByRole("radio", { name: "Technical" }).click();
+  await page.mouse.move(700, 400);
+  for (let i = 0; i < 6; i++) await page.mouse.wheel(0, -120);
+  await page.waitForTimeout(600);
+  await shot("optimizer-technical");
+  await page.keyboard.press("f");
+  await page.getByRole("button", { name: /Compare baseline/ }).click();
+  await expect(page.getByText(/Baseline \(shelf\)/)).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(800);
+  await shot("comparison");
+  await page.getByRole("button", { name: "Save plan" }).click();
+  await page.getByTestId("confirm-save-plan").click();
+  await nav("Plans");
+  await page.waitForTimeout(800);
+  await shot("plans");
+  await nav("Impact");
+  await page.waitForTimeout(800);
+  await shot("impact");
+  await nav("Products");
+  await page.waitForTimeout(600);
+  await shot("products");
+  await nav("Benchmark");
+  await page.getByTestId("run-benchmark").click();
+  await expect(page.getByTestId("benchmark-table")).toBeVisible({ timeout: 120_000 });
+  await page.waitForTimeout(600);
+  await shot("benchmark");
+  await nav("Overview");
+  await page.waitForTimeout(600);
+  await shot("overview");
+  await page.getByRole("button", { name: "Switch to dark appearance" }).click();
+  await nav("Optimizer");
+  await page.waitForTimeout(1500);
+  await shot("optimizer-dark");
+});
